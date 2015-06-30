@@ -1,0 +1,391 @@
+\documentclass{beamer}
+\usetheme{UofA}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+
+
+\usepackage{listings}
+%\lstset{basicstyle=\ttfamily,
+ % showstringspaces=false,
+ % commentstyle=\color{red},
+ % keywordstyle=\color{blue}
+%}
+\lstdefinestyle{Bash}
+{	language=bash,
+	%keywordstyle=\color{red},
+	backgroundcolor=\color{light-gray},
+	basicstyle=\ttfamily,
+	xleftmargin=.25in,
+	xrightmargin=.25in,
+	breaklines=true,
+	literate={\$}{{\textcolor{blue}{\$}}}1 
+}
+
+
+\begin{document}
+
+%%  title page
+
+\title[GIT]{Intro to GIT}
+
+\author[Justin Erwin]{Justin Erwin}
+
+
+
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}
+"Git is a distributed revision control and source code management (SCM)", which means it keeps track of changes in text files, and can be used to integrate changes amongst different developers of that code. User can share one remote repository of the code (on a server), checkout individual version of the code (called branches), and then help merge the changes back together.
+\end{frame}
+
+\section{Configuratoin}
+\begin{frame}{Installing}
+Git comes installed on the MAC already, 
+%\begin{lstlisting}[style=Bash]
+\begin{block}{Installing Git}
+sudo port install git +svn +bash\_completion +gitweb
+\end{block}
+I find it a good idea to leave MAC's Git (as well as gcc and python) alone, and to use my own installs for working. (Macports installs in the /opt/local folder and puts it in the PATH ahead of /usr where MAC puts there programs.)
+%\end{lstlisting}
+%+svn +doc +bash_completion +gitweb
+\end{frame}
+
+\begin{frame}{config}
+We should first set some configuration variables in Git
+\begin{block}{Configuring Git}
+git config -{}-global user.name "JT Erwin" \newline
+git config -{}-global user.email jterwin@lpl.arizona.edu \newline
+git config -{}-global core.editor emacs \newline
+git config -{}-global merge.tool opendiff
+\end{block}
+The first two are pretty obvious (though you should change the name). The latter two set default applications to edit comments and handle merging, respectively (more on that later).
+\end{frame}
+
+
+
+
+%
+%
+%
+%
+%
+
+\section{Starting out}
+
+\subsection{My first git project}
+
+\begin{frame}{Starting with Git}
+\begin{itemize}
+	\item I will outline some basic GIT operations.
+	\item GIT documentation \url{git-scm.com/book/en/Getting-Started}, which can go into more detail. 
+	\item Google is always your friend when asking a particular question.
+	\item Also try out online courses (i.e. \url{www.codeschool.com/courses/try-git} or \url{githowto.com/setup}) for some practice.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+We being in folder with some code we would like to version
+\begin{block}{Create repository}
+git init
+\end{block}
+and we add some files to the repository
+\begin{block}{Adding file}
+git add Makefile main.f90 venus\_heating.f90 \newline
+git status
+\end{block}
+The \alert{status} will show us any changes since the last \alert{commit}.
+\end{frame}
+
+
+\begin{frame}
+I add some files to this repository, and then \alert{add} them to the Git repository as
+\begin{block}{Adding file}
+git add Makefile main.f90 venus\_heating.f90 \newline
+git status
+\end{block}
+Then we \alert{commit} these changes to the local repository
+\begin{block}{Committing}
+git commit -am "initial project setup" \newline
+git status
+\end{block}
+The two options in the commit are: "a" commit all changes, "m" the message string follows. If you want a longer message, leave out the "m", and the emacs (or the editor that you set in the configuration, vi is default) will pop up and you can edit the message from there.
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+	\item Use \alert{git mv} to move files
+	\item Use \alert{git rm} to delete files from repository
+	\item \alert{git log} will display a list of commits with the message
+	\item \alert{git checkout file} can be used to revert a file to any previous commit
+	\item \alert{git tag} can be used to assign a sensible name to a commit (i.e. v1.0, paper2014)
+\end{itemize}
+\end{frame}
+
+
+
+%
+%
+%
+
+\subsection{Working with Branches}
+
+\begin{frame}
+\begin{itemize}
+	\item Get use to tree metaphors
+	\item Branches are separate versions of the code we can make but leave a version of the code (the master branch) alone.
+	\item Used for experimenting with changes/updates
+	\item Used for separate development (multi users), with master being the common working copy.
+	\item Changes from branches can be merged into one another!!!
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+The \alert{checkout} option is used to switch between different branches.
+\begin{block}{creating new branch}
+git checkout -b new\_branch \newline
+git branch -{}-list
+\end{block}
+The \alert{-b} creates a new branch called \textit{new\_branch}, and switches to it. The last command will display all (local) branches.
+\end{frame}
+
+\begin{frame}
+The \alert{checkout} option is used to switch between different branches.
+\begin{block}{creating new branch}
+git commit -am "changed some stuff in new branch"  \newline
+git status \newline
+git checkout master \newline
+git status
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item When switching branches, "Local modifications to the files in the working tree are kept, 
+	so that they can be committed to the [branch]". So you should commit before switching branches (checkout) 
+	or risk confusion.
+\item You can have many branches locally and remotely, and remote branches can be checkout 
+	out to local one (clarify!!!).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Discarding changes}
+Lets say you made some changes, but it turned out to be a dead end.
+\begin{block}{Merging branches}
+git checkout main.f90
+\end{block}
+The file "main.f90" will be reverted to the last commit of the current branch, and it is removed from the staging area.
+\end{frame}
+
+\begin{frame}{Merging}
+After you have finished your changes (and tested them), you will want to merge your code back 
+into the master for others to have in their code. 
+\begin{block}{Merging branches}
+git checkout master \newline
+%git pull \newline
+git merge new\_branch 
+%git push origin master
+\end{block}
+In the above, we switch to the master branch, merge the branch into the master, and then push the 
+changes to the server for other to use.
+\end{frame}
+
+
+
+
+
+%
+%
+%
+\subsection{View differences}
+
+\begin{frame}
+Use \alert{git diff} to view the changes in our files before we commit.
+\begin{block}{\textit{diff}-ing}
+git diff [options] \textit{filename} \newline
+git diff [options]
+\end{block}
+The first will look for changes in just one file, while the second will look for all changes to the files in the git repository. The following slides show \textit{diff} can be used to see changes in the current branch, as well as comparing to past commits or other branches.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\footnotesize 
+\begin{verbatim}
+Various ways to check your working tree
+
+    $ git diff            (1)
+    $ git diff --cached   (2)
+    $ git diff HEAD       (3)
+
+1. Changes in the working tree not yet staged for the next commit.
+2. Changes between the index and your last commit; what you would be
+committing if you run "git commit" without "-a" option.
+3. Changes in the working tree since your last commit; what you would 
+be committing if you run "git commit -a"
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\footnotesize 
+\begin{verbatim}
+Comparing with arbitrary commits
+
+    $ git diff test            (1)
+    $ git diff HEAD -- ./test  (2)
+    $ git diff HEAD^ HEAD      (3)
+
+1. Instead of using the tip of the current branch, compare with the 
+tip of "test" branch.
+2. Instead of comparing with the tip of "test" branch, compare with the 
+tip of the current branch, but limit the comparison to the file "test".
+3. Compare the version before the last commit and the last commit.
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\footnotesize 
+\begin{verbatim}
+Comparing branches
+
+    $ git diff topic master    (1)
+    $ git diff topic..master   (2)
+    $ git diff topic...master  (3)
+
+1. Changes between the tips of the topic and the master branches.
+2. Same as above.
+3. Changes that occurred on the master branch since when the topic 
+branch was started off it.
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+
+\begin{block}{example}
+git diff master..multi\_iso hitran.f90 
+\end{block}
+This call shows the changes in the file \textit{hitran.f90} from the \textit{master} branch  to the \textit{multi\_iso} branch.
+\end{frame}
+
+
+
+%
+%
+%
+%
+%
+\section{Shared Projects}
+
+\begin{frame}
+\begin{itemize}
+	\item So far, the GIT repository has been located on our computer.
+	\item We can located a repository on server (i.e. HIPAS) so that many machines and users can access it.
+	\begin{itemize}
+		\item	a shared space on data has been made so that anyone in our group can access the code.
+	\end{itemize}
+	\item Github is a freemium service to host our repositories, with a GUI to look at the log and manage users/permissions.
+\end{itemize}
+\end{frame}
+
+
+%
+%
+%
+\subsection{Remote repository on HIPAS}
+
+\begin{frame}
+\begin{itemize}
+	\item Now I will discuss how I will use git on HIPAS. 
+	\item My workflow is to keep the main repository for my code (each code has its own repository) on HIPAS,
+	 then I can \alert{checkout} this repository onto my own machine to edit the code. Then I can \alert{push}
+	 changes back to the server for others to see. 
+	\item I can also \alert{checkout} the code into another folder on HIPAS to run the code on HIPAS, or 
+	\alert{checkout} the code onto HPC to run my code there. This is a nice way to make sure that I am 
+	running the most recent code on these different machines.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+In my home folder on HIPAS I create a folder \textit{projects}, and then a folder for my code called \textit{venus1.git}:
+\begin{block}{Creating a remote Git repository}
+ssh jterwin@HIPAS.lpl.arizona.edu \newline
+mkdir projects \newline
+cd project \newline
+mkdir venus1.git \newline
+cd venus1.git \newline
+git init -{}-bare
+\end{block}
+The "-{}-bare" option is here because we intend to share this repository and only to modify it remotely using "git clone/push/pull/" (more on that soon), and do not intend to modify or run code in this folder. We can checkout the code to a different folder on this machine, and compile and run it there.
+\end{frame}
+
+
+\begin{frame}
+On my laptop (or the cluster), I get access to this remote repository
+\begin{block}{Accessing repository on laptop}
+cd ~/Documents/work \newline
+git clone jterwin@HIPAS.lpl.arizona.edu:projects/venus1 \newline
+cd venus1 \newline
+git status
+\end{block}
+This will copy whatever is in the Git repository on the server (especially all the meta-information) to a directory on my laptop is named \textit{venus1} (without the .git). The \textit{status} will show me whats changed from the last commit (in this case nothing). More detailed information can be displayed by running "git config -{}-list".
+\end{frame}
+
+
+\begin{frame}
+As your modifying your code, you can commit every so often with a message of what you have changed. When you commit, you commit to the \alert{local} repository on your computer. To make these changes available to others we need to push these changes to the \alert{server}.
+\begin{block}{Pushing to server}
+git commit -am "changed some stuff" \newline
+git push origin master
+\end{block}
+In the above, "origin" lets Git know to send the changes to the server (set in the initial clone, visible with git config -{}-list). "master" is the name of the branch we wish to commit to (more on this later).
+\end{frame}
+
+
+\begin{frame}
+To get the newest version of the code, we the \alert{pull} that information on the server
+\begin{block}{Pulling server}
+git pull
+\end{block}
+is almost equivalent to 
+\begin{block}{Pulling server}
+git fetch \newline
+git merge
+\end{block}
+Basically, \textit{pull} will update the branch info from the server (a \textit{fetch}) and do an automated \textit{merge} without given you info on the merge. This may be dangerous with large project as conflicts can occur. A safer route is to use separate branches for each person or code upgrade, and then do a manual merge where you can individually resolve conflicts.
+\end{frame}
+
+
+\begin{frame}
+So, we created a shared folder on HIPAS. It is located at \textit{/cdata/ygit}. This is different from the \textit{cdata} folder in you home directory (\textit{\textasciitilde/cdata}) which points to /cdata/yel/jterwin. As I already use \textit{\textasciitilde/projects} as a location for my Git repositories, I move my project to the share folder and then create a symbolic link to the new location in \textit{\textasciitilde/projects}
+\begin{block}{Sharing Git repository}
+ssh jterwin@HIPAS.lpl.arizona.edu \newline
+cd projects \newline
+mv venus1.git /cdata/ygit/venus1.git \newline
+ln -s /cdata/ygit/venus1.git venus1.git 
+\end{block}
+And then on my laptop I can clone this remote Git repository like before.
+\end{frame}
+
+
+%
+%
+%
+\subsection{Github}
+
+\begin{frame}
+
+\end{frame}
+
+
+
+\end{document}

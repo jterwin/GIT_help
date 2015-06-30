@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+
+\usepackage{listings}
+\lstdefinestyle{Bash}
+{	language=bash,
+	%keywordstyle=\color{red},
+	backgroundcolor=\color{light-gray},
+	basicstyle=\ttfamily,
+	xleftmargin=.25in,
+	xrightmargin=.25in,
+	breaklines=true,
+	literate={\$}{{\textcolor{blue}{\$}}}1 
+}
+
+
+\begin{document}
+
+\title{Git help}
+\author{Justin}
+\date{}
+\maketitle
+
+\section{Git}
+
+Git is a piece of software for keeping tracks of version of code and other text files. It can be view/revert to old versions of code, diff between versions, make new branches of your code for testing, and can be used to aid code development among several people.
+
+\section{Starting}
+
+Git come installed on most Macs and Linux machines, but in case you want to installed an updated version via Macports.
+\begin{lstlisting}[style=Bash]
+sudo port install git-core +svn +doc +bash_completion +gitweb
+\end{lstlisting}
+
+
+Now with Git installed we can update some simple configuration info 
+\begin{lstlisting}[style=Bash]
+$ git config --global user.name "JT Erwin"
+$ git config --global user.email jterwin@lpl.arizona.edu
+\end{lstlisting}
+Note that you will want to adapt the above to your name. I also added
+\begin{lstlisting}[style=Bash]
+$ git config --global core.editor amacs
+$ git config --global merge.tool opendiff
+\end{lstlisting}
+Here I have set it up to use amacs (which is an alias to Aquamacs, a Mac GUI emacs) as the default editor as opposed to the default vim.
+
+\subsection{First repository}
+\begin{lstlisting}[style=Bash]
+$ git init
+\end{lstlisting}
+
+
+\section{Branching}
+
+
+
+
+\section{Using server}
+
+We can set up the git repository on a server, and then we can clone, commit, push to it from multiple computers and or people.
+
+\subsection{Setting up RSS key}
+
+
+\subsection{Set up on Remote Server}
+One the remote server we setup an empty git repository
+\begin{lstlisting}[style=Bash]
+$ cd ~/mycodes
+$ mkdir project.git
+$ cd project.git
+$ git --bare init
+\end{lstlisting}
+
+The '--bare' is necessary because ?
+
+
+
+\subsection{Clone to local computer}
+Now on my personal computer I can clone that project. I put the git repository on HIPAS, and on my Macbook I have my shell set up so that the variable 'HIPAS=hipas.lpl.arizona.edu'.
+\begin{lstlisting}[style=Bash]
+$ cd ~/Document/work
+$ git clone jterwin@$HIPAS:mycodes/project.git
+$ cd project
+\end{lstlisting}
+The above clone, creates a folder named 'project' (as apposed to project.git), containing a clone of the git repository. 
+
+When I do a commit, it is only to my local repository/branch. For others to see my commits, I need to push to the server
+\begin{lstlisting}[style=Bash]
+$ git commit -am 'fix for something'
+$ git push origin master
+\end{lstlisting}
+Here 'master' is the name of the branch I am working on (the default is master), and 'origin' refers to the origin of the git repository (which you can check refers to the server location by looking at 'git config --list').
+
+
+
+\end{document}
